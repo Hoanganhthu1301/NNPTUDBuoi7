@@ -1,24 +1,33 @@
 let jwt = require('jsonwebtoken')
+let fs = require('fs')
 let userController = require('../controllers/users')
-module.exports = {
-    checkLogin: async function (req, res, next) {
-        let token = req.headers.authorization;
-        if (!token || !token.startsWith("Bearer")) {
-            res.status(403).send("ban chua dang nhap");
-        }
-        token = token.split(" ")[1];
-        try {//private - public
-            let result = jwt.verify(token, "secret")
-            let user = await userController.FindById(result.id)
-            if (!user) {
-                res.status(403).send("ban chua dang nhap");
-            } else {
-                req.user = user;
-                next()
-            }
-        } catch (error) {
-            res.status(403).send("ban chua dang nhap");
+
+const publicKey = fs.readFileSync('./public.key')
+
+exports.checkLogin = async function(req,res,next){
+
+    try{
+
+        let authHeader = req.headers.authorization
+
+        if(!authHeader){
+            return res.status(401).send("khong co token")
         }
 
+        let token = authHeader.split(" ")[1]
+
+        let decoded = jwt.verify(token, publicKey,{
+            algorithms:["RS256"]
+        })
+
+        let user = await userController.FindById(decoded.id)
+
+        req.user = user
+
+        next()
+
+    }catch(err){
+        res.status(401).send("token khong hop le")
     }
+
 }
