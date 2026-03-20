@@ -38,6 +38,7 @@ app.use('/api/v1/users', require('./routes/users'));
 app.use('/api/v1/auth', require('./routes/auth'));
 app.use('/api/v1/roles', require('./routes/roles'));
 app.use('/api/v1/products', require('./routes/products'))
+app.use('/api/v1/inventory', require('./routes/inventory'))
 app.use('/api/v1/categories', require('./routes/categories'))
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
